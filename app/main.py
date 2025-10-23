@@ -3,16 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from .db import Base, engine
 from app.routes import auth_routes, crop_routes, farm_routes
 
-# Create database tables
 Base.metadata.create_all(bind=engine)
 
-# Initialize FastAPI app
 app = FastAPI(title="AgroMind Backend API", version="1.0.0")
 
 origins = [
     "http://localhost:5173",   
     "http://127.0.0.1:5173",
-    "https://your-production-domain.com"  
+    "https://your-production-domain.com"
+]
 
 app.add_middleware(
     CORSMiddleware,
