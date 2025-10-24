@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 from ..db import get_db
 from ..schemas.crop_schema import CropCreate, CropResponse
 from ..services import crop_service, ai_service
@@ -32,7 +33,7 @@ def create_crop(payload: CropCreate, db: Session = Depends(get_db)):
     return response_dict
 
 
-@router.get("/", response_model=list[CropResponse])
+@router.get("/", response_model=List[CropResponse])
 def list_crops(db: Session = Depends(get_db)):
     """
     Retrieve all crops.

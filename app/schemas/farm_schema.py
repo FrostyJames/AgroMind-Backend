@@ -10,8 +10,13 @@ class FarmBase(BaseModel):
 class FarmCreate(FarmBase):
     pass
 
+class FarmUpdate(FarmBase):
+    """Used for updating farm records."""
+    pass
+
 class FarmResponse(FarmBase):
     id: int
     crops: List[CropResponse] = []
+
     class Config:
         orm_mode = True
