@@ -29,7 +29,7 @@ app.include_router(farm_routes)
 app.include_router(crop_routes)
 app.include_router(recommendation_routes)
 app.include_router(tasks.router)
-app.include_router(alert_route.router)  # ✅ NEW: register alerts route
+app.include_router(alert_route.router) 
 
 @app.get("/", tags=["Root"])
 def root():
