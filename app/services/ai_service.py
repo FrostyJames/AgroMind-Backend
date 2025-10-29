@@ -4,7 +4,8 @@ import os
 import logging
 from typing import Optional
 from openai import OpenAI
-from ..config import settings
+from ..config.settings import settings
+
 
 logger = logging.getLogger(__name__)
 client = OpenAI(api_key=settings.OPENAI_API_KEY)

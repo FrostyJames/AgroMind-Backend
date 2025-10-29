@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .db import Base, engine
@@ -11,13 +15,12 @@ Base.metadata.create_all(bind=engine)
 # ✅ Initialize FastAPI app
 app = FastAPI(title="AgroMind Backend API", version="1.0.0")
 
-# ✅ Allow frontend origins (including Vite dev server on port 5174)
+# ✅ Allow frontend origins (local + deployed)
 origins = [
-    "http://localhost:5173",
+    "http://localhost:5173",                     
     "http://127.0.0.1:5173",
-    "http://localhost:5174",
-    "http://127.0.0.1:5174",
-    "https://your-production-domain.com"
+    "https://agro-mind-frontend.vercel.app",      
+    "https://agromind-backend-2v1j.onrender.com"  
 ]
 
 # ✅ Enable CORS
