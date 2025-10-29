@@ -3,14 +3,16 @@ import re
 import os
 import logging
 from typing import Optional
-from openai import OpenAI
+import openai
 from ..config.settings import settings
 
 logger = logging.getLogger(__name__)
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
+# OpenRouter setup
+openai.api_key = settings.OPENROUTER_API_KEY  # store your key in .env as OPENROUTER_API_KEY
+openai.api_base = "https://openrouter.ai/api/v1"
 
 def extract_json(text: str) -> Optional[dict]:
-    """Extracts the first JSON object from a string."""
     match = re.search(r'\{.*\}', text, re.DOTALL)
     if match:
         try:
@@ -20,7 +22,6 @@ def extract_json(text: str) -> Optional[dict]:
     return None
 
 def load_crop_profile(crop: str) -> dict:
-    """Loads a crop profile from app/data/crops/{crop}.json"""
     path = f"app/data/crops/{crop.lower()}.json"
     if os.path.exists(path):
         try:
@@ -31,7 +32,6 @@ def load_crop_profile(crop: str) -> dict:
     return {}
 
 def classify_crop_query(query: str) -> str:
-    """Classifies the query into a known crop-related category."""
     query = query.lower()
     if "health" in query or "condition" in query:
         return "health_analysis"
@@ -87,11 +87,9 @@ PROMPT_TEMPLATES = {
 }
 
 def route_crop_query(query: str, crop: str, kiswahili: bool = False) -> dict:
-    """Routes the query to the correct prompt template and calls the AI model."""
     query_type = classify_crop_query(query)
     prompt = PROMPT_TEMPLATES[query_type](crop)
 
-    # Inject crop profile
     profile = load_crop_profile(crop)
     if profile:
         prompt += f"\nCrop profile:\n{json.dumps(profile)}"
@@ -99,15 +97,14 @@ def route_crop_query(query: str, crop: str, kiswahili: bool = False) -> dict:
         logger.warning(f"No crop profile found for '{crop}'")
         prompt += f"\nNote: No crop profile was found for {crop}. Respond based on general knowledge."
 
-    # Optional Kiswahili toggle
     if kiswahili:
         prompt += "\nRespond in Kiswahili."
 
-    logger.info(f"Prompt sent to OpenAI:\n{prompt}")
+    logger.info(f"Prompt sent to OpenRouter:\n{prompt}")
 
     try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+        response = openai.ChatCompletion.create(
+            model="mistralai/mixtral-8x7b-instruct",
             messages=[
                 {"role": "system", "content": "You are a precision agriculture AI assistant."},
                 {"role": "user", "content": prompt},
@@ -115,7 +112,7 @@ def route_crop_query(query: str, crop: str, kiswahili: bool = False) -> dict:
             temperature=0.4,
         )
 
-        content = response.choices[0].message.content.strip()
+        content = response.choices[0].message["content"].strip()
         logger.info(f"Raw response:\n{content}")
         data = extract_json(content)
 
