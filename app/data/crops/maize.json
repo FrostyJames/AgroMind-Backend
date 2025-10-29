@@ -1,0 +1,8 @@
+{
+  "name": "maize",
+  "growth_stages": ["germination", "vegetative", "flowering", "maturity"],
+  "ideal_inputs": ["DAP fertilizer", "urea", "compost"],
+  "common_pests": ["fall armyworm", "stem borer"],
+  "irrigation": "Water every 5–7 days during vegetative stage",
+  "local_practices": "Plant in rows with spacing of 75cm x 25cm. Apply top dressing after 3 weeks."
+}

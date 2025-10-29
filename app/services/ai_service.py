@@ -1,27 +1,104 @@
+import json
+import re
+import os
+import logging
+from typing import Optional
 from openai import OpenAI
 from ..config import settings
-import json
 
+logger = logging.getLogger(__name__)
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
-def analyze_crop_health(crop_name: str, growth_stage: str) -> dict:
-    """
-    Uses OpenAI to provide AI-generated analysis of crop condition and recommendations.
-    Returns a dict: {"health_score": float, "advice": str}
-    """
-    prompt = f"""
-    You are an agricultural expert. Analyze the crop health and give a health score (0–100)
-    and brief advice based on this information:
+def extract_json(text: str) -> Optional[dict]:
+    """Extracts the first JSON object from a string."""
+    match = re.search(r'\{.*\}', text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group())
+        except json.JSONDecodeError:
+            logger.warning("Failed to parse extracted JSON block.")
+    return None
 
-    Crop: {crop_name}
-    Growth stage: {growth_stage}
+def load_crop_profile(crop: str) -> dict:
+    """Loads a crop profile from app/data/crops/{crop}.json"""
+    path = f"app/data/crops/{crop.lower()}.json"
+    if os.path.exists(path):
+        try:
+            with open(path) as f:
+                return json.load(f)
+        except Exception as e:
+            logger.warning(f"Error loading crop profile for {crop}: {e}")
+    return {}
 
-    Respond strictly in JSON format:
-    {{
-        "health_score": <number>,
-        "advice": "<short recommendation>"
-    }}
+def classify_crop_query(query: str) -> str:
+    """Classifies the query into a known crop-related category."""
+    query = query.lower()
+    if "health" in query or "condition" in query:
+        return "health_analysis"
+    elif "fertilizer" in query or "input" in query or "nutrient" in query:
+        return "input_recommendation"
+    elif "water" in query or "irrigation" in query:
+        return "irrigation_advice"
+    elif "pest" in query or "disease" in query or "holes" in query or "spots" in query:
+        return "pest_diagnosis"
+    else:
+        return "general_crop_question"
+
+PROMPT_TEMPLATES = {
+    "health_analysis": lambda crop: f"""
+        You are an agricultural expert. Assess the health of {crop} and give a score (0–100) with advice.
+        Respond in JSON:
+        {{
+            "health_score": <number>,
+            "advice": "<short recommendation>"
+        }}
+    """,
+    "input_recommendation": lambda crop: f"""
+        Recommend ideal inputs (fertilizer, nutrients) for growing {crop}.
+        Respond in JSON:
+        {{
+            "recommendations": ["input1", "input2"],
+            "notes": "<brief explanation>"
+        }}
+    """,
+    "irrigation_advice": lambda crop: f"""
+        Provide irrigation advice for {crop} based on typical growth needs.
+        Respond in JSON:
+        {{
+            "schedule": "<watering frequency>",
+            "notes": "<brief explanation>"
+        }}
+    """,
+    "pest_diagnosis": lambda crop: f"""
+        Diagnose common pests or diseases affecting {crop} and give advice.
+        Respond in JSON:
+        {{
+            "possible_issue": "<diagnosis>",
+            "treatment": "<brief recommendation>"
+        }}
+    """,
+    "general_crop_question": lambda crop: f"""
+        Answer the user's crop-related question about {crop}.
+        Respond in JSON:
+        {{
+            "response": "<brief answer>"
+        }}
     """
+}
+
+def route_crop_query(query: str, crop: str, kiswahili: bool = False) -> dict:
+    """Routes the query to the correct prompt template and calls the AI model."""
+    query_type = classify_crop_query(query)
+    prompt = PROMPT_TEMPLATES[query_type](crop)
+
+    # Inject crop profile
+    profile = load_crop_profile(crop)
+    if profile:
+        prompt += f"\nCrop profile:\n{json.dumps(profile)}"
+
+    # Optional Kiswahili toggle
+    if kiswahili:
+        prompt += "\nRespond in Kiswahili."
 
     try:
         response = client.chat.completions.create(
@@ -34,19 +111,10 @@ def analyze_crop_health(crop_name: str, growth_stage: str) -> dict:
         )
 
         content = response.choices[0].message.content.strip()
-        return json.loads(content)
+        data = extract_json(content)
 
-    except json.JSONDecodeError:
-        return {"health_score": 75.0, "advice": "AI returned invalid format."}
+        return data or {"response": "AI returned invalid format."}
 
     except Exception as e:
-        print(f"AI Service Error: {e}")
-
-        # Fallback for quota errors
-        if "insufficient_quota" in str(e) or "429" in str(e):
-            return {
-                "health_score": 78.0,
-                "advice": "Using fallback: Ensure proper irrigation and monitor leaf color."
-            }
-
-        return {"health_score": 50.0, "advice": "AI service unavailable."}
+        logger.error(f"AI Service Error: {e}")
+        return {"response": "AI service unavailable. Please try again later."}
