@@ -3,11 +3,11 @@ import re
 import os
 import logging
 from typing import Optional
-import openai
+from openai import OpenAI
 from ..config.settings import settings
 
 logger = logging.getLogger(__name__)
-openai.api_key = settings.OPENAI_API_KEY
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 def extract_json(text: str) -> Optional[dict]:
     """Extracts the first JSON object from a string."""
@@ -95,6 +95,9 @@ def route_crop_query(query: str, crop: str, kiswahili: bool = False) -> dict:
     profile = load_crop_profile(crop)
     if profile:
         prompt += f"\nCrop profile:\n{json.dumps(profile)}"
+    else:
+        logger.warning(f"No crop profile found for '{crop}'")
+        prompt += f"\nNote: No crop profile was found for {crop}. Respond based on general knowledge."
 
     # Optional Kiswahili toggle
     if kiswahili:
@@ -103,7 +106,7 @@ def route_crop_query(query: str, crop: str, kiswahili: bool = False) -> dict:
     logger.info(f"Prompt sent to OpenAI:\n{prompt}")
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You are a precision agriculture AI assistant."},
@@ -112,7 +115,7 @@ def route_crop_query(query: str, crop: str, kiswahili: bool = False) -> dict:
             temperature=0.4,
         )
 
-        content = response.choices[0].message["content"].strip()
+        content = response.choices[0].message.content.strip()
         logger.info(f"Raw response:\n{content}")
         data = extract_json(content)
 
@@ -120,4 +123,4 @@ def route_crop_query(query: str, crop: str, kiswahili: bool = False) -> dict:
 
     except Exception as e:
         logger.error(f"AI Service Error: {e}")
-        return {"response": "AI service unavailable. Please try again later."}
+        return {"response": f"AI service unavailable: {str(e)}"}
