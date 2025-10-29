@@ -9,7 +9,21 @@ from app.routes import alert_route  # ✅ Climate alerts route
 Base.metadata.create_all(bind=engine)
 
 # ✅ Initialize FastAPI app
-app = FastAPI(title="AgroMind Backend API", version="1.0.0")
+app = FastAPI(
+    title="AgroMind Backend API 🌾",
+    description="""
+    AgroMind is an intelligent agriculture platform powered by AI.  
+    It helps farmers monitor crop health, receive AI-driven recommendations, manage farms, and plan agricultural tasks.
+
+    **Main Features:**
+    - 🌦 Real-time climate alerts  
+    - 🌱 AI-based crop health analysis  
+    - 🚜 Farm management (CRUD)  
+    - 🧠 Crop recommendations  
+    - ✅ Task scheduling  
+    """,
+    version="1.0.0",
+)
 
 # ✅ Allow frontend origins (including Vite dev server on port 5174)
 origins = [
