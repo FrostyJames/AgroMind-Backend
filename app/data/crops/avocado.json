@@ -1,0 +1,10 @@
+{
+  "name": "Avocado",
+  "growth_stages": ["seedling", "vegetative", "flowering", "fruit set", "maturity"],
+  "ideal_inputs": {
+    "fertilizer": ["organic compost", "NPK 10:10:20"],
+    "irrigation": "weekly during dry season, avoid overwatering"
+  },
+  "common_pests": ["thrips", "fruit flies", "anthracnose"],
+  "notes": "Prune annually to improve airflow and light penetration."
+}

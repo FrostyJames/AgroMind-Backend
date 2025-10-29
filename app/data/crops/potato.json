@@ -1,0 +1,10 @@
+{
+  "name": "Potato",
+  "growth_stages": ["sprouting", "vegetative", "tuber initiation", "tuber bulking", "maturity"],
+  "ideal_inputs": {
+    "fertilizer": ["NPK 14:14:20", "calcium ammonium nitrate"],
+    "irrigation": "every 7–10 days, avoid waterlogging"
+  },
+  "common_pests": ["late blight", "aphids", "cutworms"],
+  "notes": "Use certified seed. Hill soil around stems to protect tubers."
+}

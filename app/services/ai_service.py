@@ -3,12 +3,11 @@ import re
 import os
 import logging
 from typing import Optional
-from openai import OpenAI
+import openai
 from ..config.settings import settings
 
-
 logger = logging.getLogger(__name__)
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
+openai.api_key = settings.OPENAI_API_KEY
 
 def extract_json(text: str) -> Optional[dict]:
     """Extracts the first JSON object from a string."""
@@ -101,9 +100,11 @@ def route_crop_query(query: str, crop: str, kiswahili: bool = False) -> dict:
     if kiswahili:
         prompt += "\nRespond in Kiswahili."
 
+    logger.info(f"Prompt sent to OpenAI:\n{prompt}")
+
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
+        response = openai.ChatCompletion.create(
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You are a precision agriculture AI assistant."},
                 {"role": "user", "content": prompt},
@@ -111,7 +112,8 @@ def route_crop_query(query: str, crop: str, kiswahili: bool = False) -> dict:
             temperature=0.4,
         )
 
-        content = response.choices[0].message.content.strip()
+        content = response.choices[0].message["content"].strip()
+        logger.info(f"Raw response:\n{content}")
         data = extract_json(content)
 
         return data or {"response": "AI returned invalid format."}
