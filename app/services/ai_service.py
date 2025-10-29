@@ -107,7 +107,7 @@ def route_crop_query(query: str, crop: str, kiswahili: bool = False) -> dict:
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a precision agriculture AI assistant."},
                 {"role": "user", "content": prompt},
