@@ -2,15 +2,11 @@ import json
 import re
 import os
 import logging
+import requests
 from typing import Optional
-import openai
 from ..config.settings import settings
 
 logger = logging.getLogger(__name__)
-
-# OpenRouter setup
-openai.api_key = settings.OPENROUTER_API_KEY  # store your key in .env as OPENROUTER_API_KEY
-openai.api_base = "https://openrouter.ai/api/v1"
 
 def extract_json(text: str) -> Optional[dict]:
     match = re.search(r'\{.*\}', text, re.DOTALL)
@@ -103,20 +99,26 @@ def route_crop_query(query: str, crop: str, kiswahili: bool = False) -> dict:
     logger.info(f"Prompt sent to OpenRouter:\n{prompt}")
 
     try:
-        response = openai.ChatCompletion.create(
-            model="mistralai/mixtral-8x7b-instruct",
-            messages=[
-                {"role": "system", "content": "You are a precision agriculture AI assistant."},
-                {"role": "user", "content": prompt},
-            ],
-            temperature=0.4,
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "mistralai/mixtral-8x7b-instruct",
+                "messages": [
+                    {"role": "system", "content": "You are a precision agriculture AI assistant."},
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.4
+            }
         )
-
-        content = response.choices[0].message["content"].strip()
+        response.raise_for_status()
+        content = response.json()["choices"][0]["message"]["content"].strip()
         logger.info(f"Raw response:\n{content}")
         data = extract_json(content)
-
-        return data or {"response": "AI returned invalid format."}
+        return data or {"response": content}
 
     except Exception as e:
         logger.error(f"AI Service Error: {e}")
