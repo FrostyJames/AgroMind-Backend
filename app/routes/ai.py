@@ -27,26 +27,26 @@ feedback_store = []
 def analyze_crop_query(payload: CropQuery):
     if not settings.OPENROUTER_API_KEY:
         logger.error("Missing OpenRouter API key.")
-        raise HTTPException(status_code=500, detail="Missing OpenRouter API key.")
+        return {"response": "Missing OpenRouter API key."}
     try:
         result = route_crop_query(payload.query, payload.crop_name)
         return result
     except Exception as e:
         logger.exception("Error during crop analysis")
-        raise HTTPException(status_code=500, detail=f"AI error: {str(e)}")
+        return {"response": f"Backend error: {str(e)}"}
 
 # ✅ General crop Q&A (ChatGPT-style)
 @router.post("/ask")
 def ask_crop_question(payload: CropQuery):
     if not settings.OPENROUTER_API_KEY:
         logger.error("Missing OpenRouter API key.")
-        raise HTTPException(status_code=500, detail="Missing OpenRouter API key.")
+        return {"response": "Missing OpenRouter API key."}
     try:
         result = route_crop_query(payload.query, payload.crop_name, kiswahili=payload.kiswahili)
         return result
     except Exception as e:
         logger.exception("Error during crop Q&A")
-        raise HTTPException(status_code=500, detail=f"AI error: {str(e)}")
+        return {"response": f"Backend error: {str(e)}"}
 
 # ✅ Feedback endpoint
 @router.post("/feedback")
