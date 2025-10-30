@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from ..services.ai_service import route_crop_query
+from ..config.settings import settings  # ✅ Access environment config
 
-# ✅ Add prefix so all endpoints are under /ai
 router = APIRouter(prefix="/ai", tags=["AI"])
 
 # 🔹 Request model for asking crop questions
@@ -20,9 +20,11 @@ class Feedback(BaseModel):
 # 🔹 In-memory feedback store (can be replaced with DB later)
 feedback_store = []
 
-# ✅ Original endpoint for structured analysis
+# ✅ Structured analysis endpoint
 @router.post("/analyze")
 def analyze_crop_query(payload: CropQuery):
+    if not settings.OPENROUTER_API_KEY:
+        raise HTTPException(status_code=500, detail="Missing OpenRouter API key.")
     try:
         result = route_crop_query(payload.query, payload.crop_name)
         return result
@@ -32,6 +34,8 @@ def analyze_crop_query(payload: CropQuery):
 # ✅ General crop Q&A (ChatGPT-style)
 @router.post("/ask")
 def ask_crop_question(payload: CropQuery):
+    if not settings.OPENROUTER_API_KEY:
+        raise HTTPException(status_code=500, detail="Missing OpenRouter API key.")
     try:
         result = route_crop_query(payload.query, payload.crop_name, kiswahili=payload.kiswahili)
         return result
