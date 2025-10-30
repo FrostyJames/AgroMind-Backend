@@ -21,13 +21,13 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://agro-mind-frontend.vercel.app",
-    "https://agromind-backend-2v1j.onrender.com"
+    "https://agro-mind-frontend-9985nmm2h-james-ivans-projects-7c9e8b6a.vercel.app"  # ✅ Add exact deployed frontend domain
 ]
 
 # ✅ Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins,  # You can use ["*"] temporarily for testing
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,7 +41,7 @@ app.include_router(recommendation_routes)
 app.include_router(tasks.router)
 app.include_router(alert_route.router)
 app.include_router(ai_routes)
-app.include_router(activities_routes)  
+app.include_router(activities_routes)
 
 # ✅ Root endpoint
 @app.get("/", tags=["Root"])
