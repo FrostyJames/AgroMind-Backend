@@ -1,0 +1,10 @@
+{
+  "name": "Sukuma Wiki",
+  "growth_stages": ["nursery", "transplanting", "vegetative", "harvest"],
+  "ideal_inputs": {
+    "fertilizer": ["CAN", "compost", "urea"],
+    "irrigation": "2–3 times per week depending on rainfall"
+  },
+  "common_pests": ["diamondback moth", "aphids", "cutworms"],
+  "notes": "Harvest outer leaves regularly to encourage regrowth."
+}

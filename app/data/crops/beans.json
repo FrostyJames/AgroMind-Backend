@@ -1,0 +1,10 @@
+{
+  "name": "Beans",
+  "growth_stages": ["germination", "vegetative", "flowering", "pod formation", "maturity"],
+  "ideal_inputs": {
+    "fertilizer": ["DAP", "farmyard manure", "Rhizobium inoculant"],
+    "irrigation": "every 4–6 days during flowering and podding"
+  },
+  "common_pests": ["aphids", "bean fly", "root rot"],
+  "notes": "Avoid waterlogging. Rotate with cereals to reduce disease pressure."
+}

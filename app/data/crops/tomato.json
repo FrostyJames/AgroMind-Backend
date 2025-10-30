@@ -1,0 +1,10 @@
+{
+  "name": "Tomato",
+  "growth_stages": ["germination", "vegetative", "flowering", "fruiting", "maturity"],
+  "ideal_inputs": {
+    "fertilizer": ["NPK 17:17:17", "compost"],
+    "irrigation": "every 3–5 days during flowering"
+  },
+  "common_pests": ["whiteflies", "leaf miners", "early blight"],
+  "notes": "Stake plants early and prune lower leaves to improve airflow."
+}

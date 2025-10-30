@@ -1,0 +1,10 @@
+{
+  "name": "Maize",
+  "growth_stages": ["germination", "vegetative", "flowering", "grain filling", "maturity"],
+  "ideal_inputs": {
+    "fertilizer": ["DAP", "urea", "compost"],
+    "irrigation": "every 5–7 days during vegetative stage"
+  },
+  "common_pests": ["fall armyworm", "stem borer", "maize weevil"],
+  "notes": "Topdress with urea 3 weeks after planting. Avoid waterlogging."
+}
