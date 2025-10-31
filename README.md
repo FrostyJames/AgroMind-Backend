@@ -27,33 +27,8 @@ AI Integration: OpenAI
 
 Docs: Swagger & ReDoc
 
-## Installation and Setup
-### 1. Clone the repository
-``` bash
-git clone https://github.com/your-username/agromind-backend.git
-cd agromind-backend
-```
-### 2. Create a virtual environment
-``` bash
-python -m venv venv
-source venv/bin/activate   # Mac/Linux
-venv\Scripts\activate      # Windows
-```
-### 3. Install dependencies
-``` bash
-pip install -r requirements.txt
-```
-### 4. Run the FastAPI server
-``` bash
-uvicorn app.main:app --reload
-```
-### 5. Access the API
-Base URL: http://localhost:8000
-
-Swagger UI: http://localhost:8000/docs
-
-ReDoc: http://localhost:8000/redoc
-
+## Live link
+https://agromind-backend-2v1j.onrender.com/
 ## AI API Endpoints
 | Endpoint            | Method | Description                                            |
 | ------------------- | ------ | ------------------------------------------------------ |

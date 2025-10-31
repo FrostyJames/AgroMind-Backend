@@ -8,8 +8,8 @@
 
 ## Base URLs
 
-- **Local:** `http://localhost:8000`
-- **Production (deployed one):** `<yet to access it>`
+
+- `https://agromind-backend-2v1j.onrender.com/`
 
 ---
 
