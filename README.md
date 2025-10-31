@@ -77,3 +77,29 @@ Example AI response:
 }
 
 ``` 
+## Testing
+The backend routes and services were tested using pytest, with FastAPI’s TestClient for API endpoints and unittest.mock for mocking external requests (e.g., OpenWeather API).
+
+Note: Some tests require environment variables (like OPENAI_API_KEY, SECRET_KEY, and DATABASE_URL) to be set. If these are missing in your environment, tests may fail with validation errors. These do not indicate a problem with the project itself — the application works correctly when the environment variables are provided.
+
+### Running the tests
+1. Install the test dependencies (if not already installed):
+```bash
+pip install pytest requests
+```
+
+2. From the project root, run all tests:
+```bash
+pytest
+```
+3. To run a specific test file (e.g., test_alert_route.py):
+```bash
+pytest tests/test_alert_route.py
+```
+
+4. (Optional) Show detailed output:
+```bash
+pytest -v
+```
+
+This setup allows you to verify that the routes and services behave as expected in a controlled environment.
