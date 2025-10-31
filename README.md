@@ -25,7 +25,7 @@ Authentication: OAuth2 + JWT
 
 AI Integration: OpenAI
 
-Docs: Auto-generated with FastAPI (Swagger & ReDoc)
+Docs: Swagger & ReDoc
 
 ## Installation and Setup
 ### 1. Clone the repository
